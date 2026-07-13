@@ -1,51 +1,151 @@
-// Smooth scrolling for navigation links
-document.querySelectorAll("nav a").forEach(link => {
-    link.addEventListener("click", function(e) {
+// ==========================
+// Smooth Scrolling
+// ==========================
+
+document.querySelectorAll('nav a').forEach(link => {
+
+    link.addEventListener('click', function(e){
+
         e.preventDefault();
 
-        const target = document.querySelector(this.getAttribute("href"));
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
 
-        target.scrollIntoView({
-            behavior: "smooth"
+            behavior:'smooth'
+
         });
+
     });
+
 });
 
-// Fade-in animation on scroll
+// ==========================
+// Scroll Animation
+// ==========================
+
 const sections = document.querySelectorAll("section");
 
-window.addEventListener("scroll", () => {
-    sections.forEach(section => {
-        const position = section.getBoundingClientRect().top;
-        const screenPosition = window.innerHeight / 1.2;
+const observer = new IntersectionObserver(entries=>{
 
-        if (position < screenPosition) {
-            section.style.opacity = "1";
-            section.style.transform = "translateY(0)";
+    entries.forEach(entry=>{
+
+        if(entry.isIntersecting){
+
+            entry.target.classList.add("show");
+
         }
+
     });
+
+},{
+    threshold:0.2
 });
 
-// Initial styles for animation
-sections.forEach(section => {
-    section.style.opacity = "0";
-    section.style.transform = "translateY(50px)";
-    section.style.transition = "all 0.8s ease";
+sections.forEach(section=>{
+
+    section.classList.add("hidden");
+
+    observer.observe(section);
+
 });
 
+// ==========================
 // Typing Effect
-const text = "Front-End Web Developer";
-let index = 0;
+// ==========================
 
-function typingEffect() {
-    const heading = document.querySelector("#home h3");
+const words=[
+    "Front-End Web Developer",
+    "Web Designer",
+    "BCA Student",
+    "UI Developer"
+];
 
-    if (index < text.length) {
-        heading.textContent += text.charAt(index);
-        index++;
-        setTimeout(typingEffect, 100);
+let wordIndex=0;
+let charIndex=0;
+
+const typing=document.getElementById("typing");
+
+function type(){
+
+    if(charIndex<words[wordIndex].length){
+
+        typing.textContent+=words[wordIndex].charAt(charIndex);
+
+        charIndex++;
+
+        setTimeout(type,100);
+
     }
+
+    else{
+
+        setTimeout(erase,1500);
+
+    }
+
 }
 
-document.querySelector("#home h3").textContent = "";
-typingEffect();
+function erase(){
+
+    if(charIndex>0){
+
+        typing.textContent=words[wordIndex].substring(0,charIndex-1);
+
+        charIndex--;
+
+        setTimeout(erase,50);
+
+    }
+
+    else{
+
+        wordIndex++;
+
+        if(wordIndex>=words.length){
+
+            wordIndex=0;
+
+        }
+
+        setTimeout(type,300);
+
+    }
+
+}
+
+type();
+
+// ==========================
+// Navbar Active Link
+// ==========================
+
+const navLinks=document.querySelectorAll("nav ul li a");
+
+window.addEventListener("scroll",()=>{
+
+    let current="";
+
+    sections.forEach(section=>{
+
+        const sectionTop=section.offsetTop-120;
+
+        if(pageYOffset>=sectionTop){
+
+            current=section.getAttribute("id");
+
+        }
+
+    });
+
+    navLinks.forEach(link=>{
+
+        link.classList.remove("active");
+
+        if(link.getAttribute("href")==="#"+current){
+
+            link.classList.add("active");
+
+        }
+
+    });
+
+});
